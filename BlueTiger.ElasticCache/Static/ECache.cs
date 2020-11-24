@@ -2,13 +2,10 @@
 using BlueTiger.ElasticCache.Config;
 using BlueTiger.ElasticCache.Dto;
 using BlueTiger.ElasticCache.Exceptions;
-using BlueTiger.ElasticCache.Factory;
-using BlueTiger.ElasticCache.FluentClientExtensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Pathoschild.Http.Client;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlueTiger.ElasticCache.Static
@@ -78,7 +75,7 @@ namespace BlueTiger.ElasticCache.Static
                         new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         ).TotalMilliseconds;
 
-                    if (item._source.Identifier == identifier && 
+                    if (item._source.Identifier == identifier &&
                         item._source.ValidUntil < epochDate)
                     {
                         Logger.LogDebug("Deleting expired entry '{0}'", item._id);
@@ -116,7 +113,7 @@ namespace BlueTiger.ElasticCache.Static
                 .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
                 .As<SearchResultDto>();
 
-            if (entryInElastic.hits != null && 
+            if (entryInElastic.hits != null &&
                 entryInElastic.hits.total != null &&
                 entryInElastic.hits.total.value > 0)
             {
@@ -133,8 +130,9 @@ namespace BlueTiger.ElasticCache.Static
             }
 
             var response = await HttpClient
-                .PostAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/", 
-                new CacheEntryDto {
+                .PostAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/",
+                new CacheEntryDto
+                {
                     Identifier = identifier,
                     JsonContents = JsonConvert.SerializeObject(entry),
                     ValidUntil = (long)(DateTime.UtcNow + cacheLength).Subtract(
@@ -143,7 +141,7 @@ namespace BlueTiger.ElasticCache.Static
                 });
 
             if (delayAfterInsert)
-                await Task.Delay(ElasticCacheConfigParameters.DelayAfterInsert); 
+                await Task.Delay(ElasticCacheConfigParameters.DelayAfterInsert);
 
             if (!response.IsSuccessStatusCode &&
                 response.Status == System.Net.HttpStatusCode.NotFound &&
