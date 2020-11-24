@@ -216,6 +216,7 @@ namespace BlueTiger.ElasticCache.Static
             var handlePolicy = Policy.HandleInner<SocketException>()
                 .Or<HttpRequestException>()
                 .Or<ApiException>()
+                .Or<AggregateException>()
                 .WaitAndRetryAsync(ElasticCacheConfigParameters.MaxRetriesToCache, sleep => TimeSpan.FromSeconds(ElasticCacheConfigParameters.MaxTimeOutInSeconds));
 
             return handlePolicy;

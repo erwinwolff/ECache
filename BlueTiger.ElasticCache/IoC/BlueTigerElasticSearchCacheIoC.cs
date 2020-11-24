@@ -34,8 +34,12 @@ namespace BlueTiger.ElasticCache.IoC
             Task.Run(async () => {
                 string indexUrl = $"{ECache.ElasticCacheConfigParameters.CacheUrl}/{ECache.ElasticCacheConfigParameters.IndexName}/";
 
-                bool indexExists = (await ECache.HttpClient.SetOptions(ignoreHttpErrors: true).HeadAsync(indexUrl)).Status == System.Net.HttpStatusCode.OK;
+                bool indexExists = false;
 
+                await ECache.HttpClientToCachePolicy().ExecuteAsync(async () => { 
+                    indexExists = indexExists = (await ECache.HttpClient.SetOptions(ignoreHttpErrors: true).HeadAsync(indexUrl)).Status == System.Net.HttpStatusCode.OK;
+                });
+                
                 if (!indexExists)
                 {
                     ECache.Logger.LogInformation("Creating ECache index ...");
