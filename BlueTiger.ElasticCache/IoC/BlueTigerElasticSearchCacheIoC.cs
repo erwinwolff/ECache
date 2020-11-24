@@ -53,7 +53,7 @@ namespace BlueTiger.ElasticCache.IoC
                             properties = new
                             {
                                 Identifier = new { type = "keyword" },
-                                JsonContents = new { type = "keyword" },
+                                JsonContents = new { type = "text" },
                                 ValidUntil = new { type = "date" }
                             }
                         }
