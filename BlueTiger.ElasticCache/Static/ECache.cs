@@ -5,6 +5,7 @@ using BlueTiger.ElasticCache.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Pathoschild.Http.Client;
+using Polly;
 using System;
 using System.Threading.Tasks;
 
@@ -22,9 +23,14 @@ namespace BlueTiger.ElasticCache.Static
 
         public static async Task<bool> HasEntryAsync(string identifier)
         {
-            var entryInElastic = await HttpClient
-                .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
-                .As<SearchResultDto>();
+            SearchResultDto entryInElastic = null;
+
+            await HttpClientToCachePolicy().Execute(async () =>
+            {
+                entryInElastic = await HttpClient
+                     .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
+                     .As<SearchResultDto>();
+            });
 
             if (entryInElastic.hits != null &&
                 entryInElastic.hits.total != null &&
@@ -61,9 +67,14 @@ namespace BlueTiger.ElasticCache.Static
 
             T result = default(T);
 
-            var entryInElastic = await HttpClient
-                .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
-                .As<SearchResultDto>();
+            SearchResultDto entryInElastic = null;
+
+            await HttpClientToCachePolicy().Execute(async () =>
+            {
+                entryInElastic = await HttpClient
+                   .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
+                   .As<SearchResultDto>();
+            });
 
             if (entryInElastic.hits != null &&
                 entryInElastic.hits.total != null &&
@@ -109,9 +120,14 @@ namespace BlueTiger.ElasticCache.Static
 
             Logger.LogDebug("Setting entry '{0}'", identifier);
 
-            var entryInElastic = await HttpClient
-                .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
-                .As<SearchResultDto>();
+            SearchResultDto entryInElastic = null;
+
+            await HttpClientToCachePolicy().Execute(async () =>
+            {
+                entryInElastic = await HttpClient
+                   .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
+                   .As<SearchResultDto>();
+            });
 
             if (entryInElastic.hits != null &&
                 entryInElastic.hits.total != null &&
@@ -122,23 +138,32 @@ namespace BlueTiger.ElasticCache.Static
                     if (item._source.Identifier == identifier)
                     {
                         Logger.LogDebug("Deleting exsting entry '{0}'", item._id);
-                        await HttpClient
+
+                        await HttpClientToCachePolicy().Execute(async () =>
+                        {
+                            await HttpClient
                             .DeleteAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/{item._id}")
                             .AsString();
+                        });
                     }
                 }
             }
 
-            var response = await HttpClient
-                .PostAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/",
-                new CacheEntryDto
-                {
-                    Identifier = identifier,
-                    JsonContents = JsonConvert.SerializeObject(entry),
-                    ValidUntil = (long)(DateTime.UtcNow + cacheLength).Subtract(
-                        new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                        ).TotalMilliseconds
-                });
+            IResponse response = null;
+
+            await HttpClientToCachePolicy().Execute(async () =>
+            {
+                response = await HttpClient
+                   .PostAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/",
+                   new CacheEntryDto
+                   {
+                       Identifier = identifier,
+                       JsonContents = JsonConvert.SerializeObject(entry),
+                       ValidUntil = (long)(DateTime.UtcNow + cacheLength).Subtract(
+                           new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                           ).TotalMilliseconds
+                   });
+            });
 
             if (delayAfterInsert)
                 await Task.Delay(ElasticCacheConfigParameters.DelayAfterInsert);
@@ -154,9 +179,14 @@ namespace BlueTiger.ElasticCache.Static
             if (string.IsNullOrEmpty(identifier))
                 throw new ArgumentNullException(nameof(identifier));
 
-            var entryInElastic = await HttpClient
-                .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
-                .As<SearchResultDto>();
+            SearchResultDto entryInElastic = null;
+
+            await HttpClientToCachePolicy().Execute(async () =>
+            {
+                entryInElastic = await HttpClient
+                   .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
+                   .As<SearchResultDto>();
+            });
 
             if (entryInElastic.hits != null &&
                 entryInElastic.hits.total != null &&
@@ -167,12 +197,25 @@ namespace BlueTiger.ElasticCache.Static
                     if (item._source.Identifier == identifier)
                     {
                         Logger.LogDebug("Deleting exsting entry '{0}'", item._id);
-                        await HttpClient
-                            .DeleteAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/{item._id}")
-                            .AsString();
+
+                        await HttpClientToCachePolicy().Execute(async () =>
+                        {
+                            await HttpClient
+                                .DeleteAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/{item._id}")
+                                .AsString();
+                        });
                     }
                 }
             }
+        }
+
+        private static Policy HttpClientToCachePolicy()
+        {
+            var handlePolicy = Policy.Handle<ApiException>().Retry(ElasticCacheConfigParameters.MaxRetriesToCache);
+
+            return Policy
+                .Timeout(ElasticCacheConfigParameters.MaxRetriesToCache)
+                .Wrap(handlePolicy);
         }
     }
 }

@@ -29,7 +29,6 @@ namespace BlueTigerElasticCache
             var entry2 = await ECache.GetEntryAsync<dynamic>("test-entry");
             var entry3 = await ECache.GetEntryAsync<dynamic>("test-entry2");
 
-
             Thread.Sleep(2000);
 
             var entry4 = await ECache.GetEntryAsync<dynamic>("test-entry");

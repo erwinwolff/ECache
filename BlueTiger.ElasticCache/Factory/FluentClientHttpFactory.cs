@@ -19,7 +19,7 @@ namespace BlueTiger.ElasticCache.Factory
             {
                 logger.LogDebug("FluentClient for ECache created");
                 HttpClient = new FluentClient(new Uri(elasticCacheConfigParameters.CacheUrl), httpClient)
-                    .SetOptions(ignoreHttpErrors: true).SetUserAgent(".NET Core ECache");
+                    .SetUserAgent(".NET Core ECache");
             }
         }
 
