@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using Pathoschild.Http.Client;
 using Polly;
 using System;
+using System.Net.Http;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace BlueTiger.ElasticCache.Static
@@ -124,6 +126,7 @@ namespace BlueTiger.ElasticCache.Static
 
             await HttpClientToCachePolicy().Execute(async () =>
             {
+               
                 entryInElastic = await HttpClient
                    .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
                    .As<SearchResultDto>();
@@ -209,13 +212,14 @@ namespace BlueTiger.ElasticCache.Static
             }
         }
 
-        private static Policy HttpClientToCachePolicy()
+        internal static Policy HttpClientToCachePolicy()
         {
-            var handlePolicy = Policy.Handle<ApiException>().Retry(ElasticCacheConfigParameters.MaxRetriesToCache);
+            var handlePolicy = Policy.HandleInner<SocketException>()
+                .Or<HttpRequestException>()
+                .Or<ApiException>()
+                .WaitAndRetry(ElasticCacheConfigParameters.MaxRetriesToCache, sleep => TimeSpan.FromSeconds(ElasticCacheConfigParameters.MaxTimeOutInSeconds));
 
-            return Policy
-                .Timeout(ElasticCacheConfigParameters.MaxRetriesToCache)
-                .Wrap(handlePolicy);
+            return handlePolicy;
         }
     }
 }

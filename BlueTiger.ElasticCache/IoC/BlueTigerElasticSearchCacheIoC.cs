@@ -34,30 +34,33 @@ namespace BlueTiger.ElasticCache.IoC
             Task.Run(async () => {
                 string indexUrl = $"{ECache.ElasticCacheConfigParameters.CacheUrl}/{ECache.ElasticCacheConfigParameters.IndexName}/";
 
-                bool indexExists = (await ECache.HttpClient.HeadAsync(indexUrl)).Status == System.Net.HttpStatusCode.OK;
+                bool indexExists = (await ECache.HttpClient.SetOptions(ignoreHttpErrors: true).HeadAsync(indexUrl)).Status == System.Net.HttpStatusCode.OK;
 
                 if (!indexExists)
                 {
                     ECache.Logger.LogInformation("Creating ECache index ...");
-                    var creationResult = await ECache.HttpClient.PutAsync(indexUrl, new
-                    {
-                        settings = new
+                    IResponse creationResult = null;
+                    await ECache.HttpClientToCachePolicy().Execute(async () => {
+                        creationResult = await ECache.HttpClient.PutAsync(indexUrl, new
                         {
-                            index = new
+                            settings = new
                             {
-                                number_of_shards = ECache.ElasticCacheConfigParameters.NumberOfShards
-                            }
-                        },
-                        mappings = new
-                        {
-                            properties = new
+                                index = new
+                                {
+                                    number_of_shards = ECache.ElasticCacheConfigParameters.NumberOfShards
+                                }
+                            },
+                            mappings = new
                             {
-                                Identifier = new { type = "keyword" },
-                                JsonContents = new { type = "text" },
-                                ValidUntil = new { type = "date" }
+                                properties = new
+                                {
+                                    Identifier = new { type = "keyword" },
+                                    JsonContents = new { type = "text" },
+                                    ValidUntil = new { type = "date" }
+                                }
                             }
-                        }
-                    }).AsResponse();
+                        }).AsResponse();
+                    });
 
                     if (!creationResult.IsSuccessStatusCode)
                         throw new ECacheIndexDoesNotExistException(ECache.ElasticCacheConfigParameters.IndexName);
