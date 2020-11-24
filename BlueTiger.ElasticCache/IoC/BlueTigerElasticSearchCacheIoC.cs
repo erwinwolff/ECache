@@ -40,7 +40,7 @@ namespace BlueTiger.ElasticCache.IoC
                 {
                     ECache.Logger.LogInformation("Creating ECache index ...");
                     IResponse creationResult = null;
-                    await ECache.HttpClientToCachePolicy().Execute(async () => {
+                    await ECache.HttpClientToCachePolicy().ExecuteAsync(async () => {
                         creationResult = await ECache.HttpClient.PutAsync(indexUrl, new
                         {
                             settings = new

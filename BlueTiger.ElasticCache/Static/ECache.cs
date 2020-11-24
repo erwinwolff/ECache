@@ -27,7 +27,7 @@ namespace BlueTiger.ElasticCache.Static
         {
             SearchResultDto entryInElastic = null;
 
-            await HttpClientToCachePolicy().Execute(async () =>
+            await HttpClientToCachePolicy().ExecuteAsync(async () =>
             {
                 entryInElastic = await HttpClient
                      .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
@@ -71,7 +71,7 @@ namespace BlueTiger.ElasticCache.Static
 
             SearchResultDto entryInElastic = null;
 
-            await HttpClientToCachePolicy().Execute(async () =>
+            await HttpClientToCachePolicy().ExecuteAsync(async () =>
             {
                 entryInElastic = await HttpClient
                    .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
@@ -124,9 +124,8 @@ namespace BlueTiger.ElasticCache.Static
 
             SearchResultDto entryInElastic = null;
 
-            await HttpClientToCachePolicy().Execute(async () =>
+            await HttpClientToCachePolicy().ExecuteAsync(async () =>
             {
-               
                 entryInElastic = await HttpClient
                    .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
                    .As<SearchResultDto>();
@@ -142,7 +141,7 @@ namespace BlueTiger.ElasticCache.Static
                     {
                         Logger.LogDebug("Deleting exsting entry '{0}'", item._id);
 
-                        await HttpClientToCachePolicy().Execute(async () =>
+                        await HttpClientToCachePolicy().ExecuteAsync(async () =>
                         {
                             await HttpClient
                             .DeleteAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/{item._id}")
@@ -154,7 +153,7 @@ namespace BlueTiger.ElasticCache.Static
 
             IResponse response = null;
 
-            await HttpClientToCachePolicy().Execute(async () =>
+            await HttpClientToCachePolicy().ExecuteAsync(async () =>
             {
                 response = await HttpClient
                    .PostAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/",
@@ -184,7 +183,7 @@ namespace BlueTiger.ElasticCache.Static
 
             SearchResultDto entryInElastic = null;
 
-            await HttpClientToCachePolicy().Execute(async () =>
+            await HttpClientToCachePolicy().ExecuteAsync(async () =>
             {
                 entryInElastic = await HttpClient
                    .GetAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_search?q={identifier}")
@@ -201,7 +200,7 @@ namespace BlueTiger.ElasticCache.Static
                     {
                         Logger.LogDebug("Deleting exsting entry '{0}'", item._id);
 
-                        await HttpClientToCachePolicy().Execute(async () =>
+                        await HttpClientToCachePolicy().ExecuteAsync(async () =>
                         {
                             await HttpClient
                                 .DeleteAsync($"{ElasticCacheConfigParameters.CacheUrl}/{ElasticCacheConfigParameters.IndexName}/_doc/{item._id}")
@@ -212,12 +211,12 @@ namespace BlueTiger.ElasticCache.Static
             }
         }
 
-        internal static Policy HttpClientToCachePolicy()
+        internal static AsyncPolicy HttpClientToCachePolicy()
         {
             var handlePolicy = Policy.HandleInner<SocketException>()
                 .Or<HttpRequestException>()
                 .Or<ApiException>()
-                .WaitAndRetry(ElasticCacheConfigParameters.MaxRetriesToCache, sleep => TimeSpan.FromSeconds(ElasticCacheConfigParameters.MaxTimeOutInSeconds));
+                .WaitAndRetryAsync(ElasticCacheConfigParameters.MaxRetriesToCache, sleep => TimeSpan.FromSeconds(ElasticCacheConfigParameters.MaxTimeOutInSeconds));
 
             return handlePolicy;
         }
