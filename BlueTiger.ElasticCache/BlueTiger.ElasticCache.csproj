@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright Stichting de Blauwe Tijger</Copyright>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <Version>0.0.1</Version>
+    <PackageProjectUrl>https://www.deblauwetijger.com</PackageProjectUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <Authors>Erwin Wolff</Authors>
+    <Company>Stichting de Blauwe Tijger</Company>
+    <Description>An NCache-like API for caching with Elastic Search with .NET Core. This is a layer to easily use the Elastic Search product as a source for caching. All rights for the Elastic Search product go to the owners of the Elastic Search stack of products.</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>MIT.txt</PackageLicenseFile>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>NCache, ECache, Elastic Search, Caching, Cache</PackageTags>
+    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="MIT.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+   
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Pathoschild.Http.FluentClient" Version="4.0.0" />
+    <PackageReference Include="Polly" Version="7.2.1" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+  </ItemGroup>
+  
+   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.10" />
+  </ItemGroup>
+</Project>
