@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFrameworks>netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Copyright Stichting de Blauwe Tijger</Copyright>
     <PackageLicenseExpression></PackageLicenseExpression>
     <Version>0.0.1</Version>
     <PackageProjectUrl>https://www.deblauwetijger.com</PackageProjectUrl>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/erwinwolff/ECache</RepositoryUrl>
     <Authors>Erwin Wolff</Authors>
     <Company>Stichting de Blauwe Tijger</Company>
     <Description>An NCache-like API for caching with Elastic Search with .NET Core. This is a layer to easily use the Elastic Search product as a source for caching. All rights for the Elastic Search product go to the owners of the Elastic Search stack of products.</Description>
@@ -16,6 +16,8 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>NCache, ECache, Elastic Search, Caching, Cache</PackageTags>
     <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <AssemblyVersion>0.0.2.0</AssemblyVersion>
+    <FileVersion>0.0.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
