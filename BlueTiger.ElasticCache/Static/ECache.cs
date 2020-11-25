@@ -52,9 +52,10 @@ namespace BlueTiger.ElasticCache.Static
                         await ClearEntryAsync(identifier);
                         return false;
                     }
-                }
 
-                return true;
+                    if (item._source.Identifier == identifier)
+                        return true;
+                }
             }
 
             return false;

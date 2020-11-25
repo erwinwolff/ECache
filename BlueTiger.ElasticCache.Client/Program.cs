@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BlueTigerElasticCache
+namespace BlueTiger.ElasticCache
 {
     internal class Program
     {
@@ -22,16 +22,19 @@ namespace BlueTigerElasticCache
 
             await ECache.SetEntryAsync("test-entry", new { cache_entry = "cache-entry" }, TimeSpan.FromSeconds(8), true /* delay */);
 
-            var entry = await ECache.GetEntryAsync<dynamic>("test-entry");
+            bool hasEntry = await ECache.HasEntryAsync("test-entry"); // true
+            bool hasEntry2 = await ECache.HasEntryAsync("test-entry2"); // false
+
+            var entry = await ECache.GetEntryAsync<dynamic>("test-entry"); // non-null
 
             Thread.Sleep(6000);
 
-            var entry2 = await ECache.GetEntryAsync<dynamic>("test-entry");
-            var entry3 = await ECache.GetEntryAsync<dynamic>("test-entry2");
+            var entry2 = await ECache.GetEntryAsync<dynamic>("test-entry"); // non-null
+            var entry3 = await ECache.GetEntryAsync<dynamic>("test-entry2"); // null
 
             Thread.Sleep(2000);
 
-            var entry4 = await ECache.GetEntryAsync<dynamic>("test-entry");
+            var entry4 = await ECache.GetEntryAsync<dynamic>("test-entry"); // expired, so null
         }
     }
 }
