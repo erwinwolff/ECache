@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Copyright Stichting de Blauwe Tijger</Copyright>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <PackageProjectUrl>https://www.deblauwetijger.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/erwinwolff/ECache</RepositoryUrl>
     <Authors>Erwin Wolff</Authors>
@@ -16,9 +16,10 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>NCache, ECache, Elastic Search, Caching, Cache</PackageTags>
     <PackageReleaseNotes>0.0.1 Initial Release
-0.0.2 Using Polly for resilience</PackageReleaseNotes>
-    <AssemblyVersion>0.0.2.0</AssemblyVersion>
-    <FileVersion>0.0.2.0</FileVersion>
+0.0.2 Using Polly for resilience
+0.0.3 Improved accuracy of HasEntryAsync&lt;&gt;</PackageReleaseNotes>
+    <AssemblyVersion>0.0.3.0</AssemblyVersion>
+    <FileVersion>0.0.3.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
