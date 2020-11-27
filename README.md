@@ -2,7 +2,7 @@
 
 ## Example implementation
 
-IServiceCollection services = new ServiceCollection();
+```IServiceCollection services = new ServiceCollection();
 services.AddElasticSearchCache(new BlueTiger.ElasticCache.Config.ElasticCacheConfigParameters {
     CacheUrl = "http://localhost:9200"
 });
@@ -26,3 +26,4 @@ var entry3 = await ECache.GetEntryAsync<dynamic>("test-entry2"); // null
 Thread.Sleep(2000);
 
 var entry4 = await ECache.GetEntryAsync<dynamic>("test-entry"); // expired, so null
+```
