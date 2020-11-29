@@ -1,4 +1,7 @@
-﻿namespace BlueTiger.ElasticCache.Config
+﻿using Microsoft.Extensions.Caching.Distributed;
+using System;
+
+namespace BlueTiger.ElasticCache.Config
 {
     public class ElasticCacheConfigParameters
     {
@@ -36,5 +39,10 @@
         /// Delay after an insert operation
         /// </summary>
         public int DelayAfterInsert { get; set; } = 750;
+
+        /// <summary>
+        /// The caching period for the <see cref="IDistributedCache"/> Implementation
+        /// </summary>
+        public TimeSpan DefaultCachingPeriod { get; set; } = TimeSpan.FromMinutes(10);
     }
 }

@@ -1,10 +1,12 @@
 ﻿using BlueTiger.ElasticCache.Accessor;
 using BlueTiger.ElasticCache.Config;
+using BlueTiger.ElasticCache.Distributed;
 using BlueTiger.ElasticCache.Exceptions;
 using BlueTiger.ElasticCache.Factory;
 using BlueTiger.ElasticCache.FluentClientExtensions;
 using BlueTiger.ElasticCache.Interfaces;
 using BlueTiger.ElasticCache.Static;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Pathoschild.Http.Client;
@@ -22,6 +24,13 @@ namespace BlueTiger.ElasticCache.IoC
             services.AddHttpClient<FluentClientHttpFactory>();
 
             ECache.ElasticCacheConfigParameters = config;
+
+            return services;
+        }
+
+        public static IServiceCollection AddElasticSearchDistributedCache(this IServiceCollection services)
+        {
+            services.AddSingleton<IDistributedCache, EDistributedCache>();
 
             return services;
         }
