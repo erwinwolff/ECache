@@ -12,7 +12,7 @@ namespace BlueTiger.ElasticCache
         private static async Task Main(string[] args)
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddElasticSearchCache(new BlueTiger.ElasticCache.Config.ElasticCacheConfigParameters {
+            services.AddElasticSearchCache(new Config.ElasticCacheConfigParameters {
                 CacheUrl = "http://localhost:9200"
             });
 
